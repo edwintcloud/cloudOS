@@ -1,7 +1,2 @@
-# build artifacts
-intermediates/
-*.o
-*.bin
-
-# release files
-*.iso
+/target
+**/*.rs.bk
