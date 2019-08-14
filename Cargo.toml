@@ -1,6 +1,6 @@
 [package]
 name = "cloud_os"
-version = "0.1.0"
+version = "0.0.1"
 authors = ["Edwin Cloud <ecloud412@gmail.com>"]
 edition = "2018"
 
