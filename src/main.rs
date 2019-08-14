@@ -7,13 +7,14 @@ mod vga_buffer;
 /// Entry Point.
 #[no_mangle] // don't anonymize the name for this function during compile
 pub extern "C" fn _start() -> ! {
-    vga_buffer::print_something();
-
+    println!("Hello World{}", "!");
+    panic!("Test panic message");
     loop {}
 }
 
 /// Function called on panic.
 #[panic_handler]
-fn panic(_info: &PanicInfo) -> ! {
+fn panic(info: &PanicInfo) -> ! {
+    println!("{}", info);
     loop {}
 }
