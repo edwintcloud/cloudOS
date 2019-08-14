@@ -3,7 +3,7 @@ ASPARAMS = --32
 LDPARAMS = -melf_i386
 INTDIR = intermediates/
 
-objects = $(INTDIR)loader.o $(INTDIR)kernel.o
+objects = $(INTDIR)loader.o $(INTDIR)kernel.o $(INTDIR)gdt.o
 
 $(INTDIR)%.o: %.cpp
 	g++ $(GPPPARMS) -c -o $@ $<
