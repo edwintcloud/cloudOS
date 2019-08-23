@@ -2,8 +2,9 @@ GPPPARMS = -m32 -fno-use-cxa-atexit -nostdlib -fno-builtin -fno-rtti -fno-except
 ASPARAMS = --32
 LDPARAMS = -melf_i386
 INTDIR = intermediates/
+RELDIR = releases/
 
-objects = $(INTDIR)loader.o $(INTDIR)kernel.o $(INTDIR)gdt.o
+objects = $(INTDIR)loader.o $(INTDIR)kernel.o $(INTDIR)gdt.o $(INTDIR)port.o
 
 $(INTDIR)%.o: %.cpp
 	g++ $(GPPPARMS) -c -o $@ $<
@@ -11,6 +12,14 @@ $(INTDIR)%.o: %.cpp
 $(INTDIR)%.o: %.s
 	as $(ASPARAMS) -o $@ $<
 
+kernel.iso: kernel.bin
+	yes | cp -f $(INTDIR)kernel.bin $(RELDIR)iso/boot/kernel.bin
+	grub-mkrescue -o $(RELDIR)cloudOS_latest.iso $(RELDIR)iso
+	
 kernel.bin: linker.ld $(objects)
 	ld $(LDPARAMS) -T $< -o $(INTDIR)$@ $(objects)
 
+
+.PHONY: clean
+clean:
+	rm -f $(objects) $(INTDIR)kernel.bin  $(RELDIR)*.iso $(RELDIR)iso/boot/kernel.bin
