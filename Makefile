@@ -4,7 +4,7 @@ LDPARAMS = -melf_i386
 INTDIR = intermediates/
 RELDIR = releases/
 
-objects = $(INTDIR)loader.o $(INTDIR)kernel.o $(INTDIR)gdt.o $(INTDIR)port.o
+objects = $(INTDIR)loader.o $(INTDIR)gdt.o $(INTDIR)port.o $(INTDIR)interruptstubs.o $(INTDIR)interrupts.o $(INTDIR)kernel.o
 
 $(INTDIR)%.o: %.cpp
 	g++ $(GPPPARMS) -c -o $@ $<

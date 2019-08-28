@@ -7,8 +7,8 @@ GlobalDescriptorTable::GlobalDescriptorTable()
       dataSegmentSelector(0, 64 * 1024 * 1024, 0x92)
 {
     uint32_t i[2];
-    i[0] = (uint32_t)this;
-    i[1] = sizeof(GlobalDescriptorTable) << 16;
+    i[1] = (uint32_t)this;
+    i[0] = sizeof(GlobalDescriptorTable) << 16;
 
     // tell processor to load descriptor table
     asm volatile("lgdt (%0)"
@@ -49,7 +49,7 @@ GlobalDescriptorTable::SegmentSelector::SegmentSelector(uint32_t base, uint32_t 
     }
 
     target[0] = limit & 0xFF;
-    target[1] = limit & 0xFF;         // 8 bits of the limit
+    target[1] = (limit >> 8) & 0xFF;  // 8 bits of the limit
     target[6] |= (limit >> 16) & 0xF; // lower bits of last segment
 
     target[2] = base & 0xFF;
@@ -78,7 +78,7 @@ uint32_t GlobalDescriptorTable::SegmentSelector::Limit()
     result = (result << 8) + target[0];
 
     if ((target[6] & 0xC0) == 0xC0)
-        result = (result << 12) + target[4];
+        result = (result << 12) | 0xFFF;
 
     return result;
 }
