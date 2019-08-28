@@ -10,9 +10,9 @@ I am developing this using Ubuntu 18.04 WSL on Windows 10. To install the apt de
 
 ```bash
 apt update && apt upgrade
-apt install grub2-common grub-pc grub-pc-bin xorriso qemu-system-i386 make g++ binutils libc6-dev-i386
+apt install grub2-common grub-pc grub-pc-bin xorriso make g++ binutils libc6-dev-i386
 ```
 
-Xmimg X Server is used for testing purposes and can be downloaded [here](https://sourceforge.net/projects/xming/).
+QEMU is used for testing purposed and can be downloaded [here](https://www.qemu.org/download/#windows)
 
-The `build.sh` and `test.sh` scripts can be executed from the root of the repository for their respective effect.
+The `build.ps1` and `test.ps1` scripts can be executed from the root of the repository for their respective effect.
