@@ -13,6 +13,6 @@ apt update && apt upgrade
 apt install grub2-common grub-pc grub-pc-bin xorriso make g++ binutils libc6-dev-i386
 ```
 
-QEMU is used for testing purposed and can be downloaded [here](https://www.qemu.org/download/#windows)
+QEMU is used for testing purposes and can be downloaded [here](https://www.qemu.org/download/#windows)
 
 The `build.ps1` and `test.ps1` scripts can be executed from the root of the repository for their respective effect.
