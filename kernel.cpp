@@ -17,6 +17,9 @@ void printf(char *str)
             x = 0;
             break;
 
+        case '\t':
+            x += 4;
+            break;
         default:
             VideoMemory[80 * y + x] = (VideoMemory[80 * y + x] & 0xFF00) | str[i];
             x++;
@@ -56,8 +59,8 @@ void printf(char *str)
 
 extern "C" void kernelMain(void *multiboot_structure, uint32_t magicnumber)
 {
-    printf("Hello World\n");
-    printf("I am an elephant.");
+    printf("\n\t\t\t\t\t\t\t** Welcome to Cloud OS **\n");
+    printf("Press any key to begin...");
 
     GlobalDescriptorTable gdt;
     InterruptManager interrupts(&gdt);

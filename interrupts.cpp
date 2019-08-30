@@ -4,6 +4,8 @@ void printf(char *str);
 
 InterruptManager::GateDescriptor InterruptManager::interruptDescriptorTable[256];
 
+InterruptManager *InterruptManager::ActiveInterruptManager = 0;
+
 void InterruptManager::SetInterruptDescriptorTableEntry(
     uint8_t interruptNumber,
     uint16_t codeSegmentSelectorOffset,
@@ -64,12 +66,40 @@ InterruptManager::~InterruptManager()
 
 void InterruptManager::Activate()
 {
+    if (ActiveInterruptManager != 0)
+        ActiveInterruptManager->Deactivate();
+    ActiveInterruptManager = this;
     asm("sti");
+}
+
+void InterruptManager::Deactivate()
+{
+    if (ActiveInterruptManager == this)
+    {
+        ActiveInterruptManager = 0;
+        asm("cli");
+    }
 }
 
 uint32_t InterruptManager::handleInterrupt(uint8_t interruptNumber, uint32_t esp)
 {
-    printf("\nINTERRUPT ");
-    printf((char *)&interruptNumber);
+    if (ActiveInterruptManager != 0)
+    {
+        return ActiveInterruptManager->DoHandleInterrupt(interruptNumber, esp);
+    }
+
+    return esp;
+}
+
+uint32_t InterruptManager::DoHandleInterrupt(uint8_t interruptNumber, uint32_t esp)
+{
+    if (interruptNumber != 0x20)
+        printf("\n\nKey Press Acknoledged");
+
+    if (interruptNumber >= 20 && interruptNumber < 0x28)
+        picMasterCommand.Write(0x20);
+    if (interruptNumber >= 28 && interruptNumber < 0x30)
+        picSlaveCommand.Write(0x20);
+
     return esp;
 }
