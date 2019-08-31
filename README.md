@@ -2,7 +2,11 @@
 
 Learning about operating systems by creating my own operating system.
 
-Download bootable releases here: [cloudOS Releases](http://www.mediafire.com/folder/f2c7bklvpphhy/releases)
+## Releases
+
+The latest beta release is [cloudOS_0.0.0_beta0.5](http://www.mediafire.com/file/gtxwd7icrc85i4o/cloudOS_0.0.0_beta0.5.iso/file)
+
+Download other bootable releases here: [cloudOS Releases](http://www.mediafire.com/folder/f2c7bklvpphhy/releases)
 
 ## Development Details
 
