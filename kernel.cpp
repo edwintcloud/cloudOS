@@ -1,6 +1,7 @@
 #include "types.h"
 #include "gdt.h"
 #include "interrupts.h"
+#include "keyboard.h"
 
 void printf(char *str)
 {
@@ -16,9 +17,12 @@ void printf(char *str)
             y++;
             x = 0;
             break;
-
         case '\t':
             x += 4;
+            break;
+        case '\b':
+            x -= 1;
+            VideoMemory[80 * y + x] = (VideoMemory[80 * y + x] & 0xFF00) | ' ';
             break;
         default:
             VideoMemory[80 * y + x] = (VideoMemory[80 * y + x] & 0xFF00) | str[i];
@@ -64,6 +68,8 @@ extern "C" void kernelMain(void *multiboot_structure, uint32_t magicnumber)
 
     GlobalDescriptorTable gdt;
     InterruptManager interrupts(&gdt);
+
+    KeyboardDriver keyboard(&interrupts);
 
     interrupts.Activate();
 
