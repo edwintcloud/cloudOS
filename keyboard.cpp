@@ -1,15 +1,11 @@
 #include "keyboard.h"
 
-char *KeyboardDriver::AnsiKeyboardKeys[128];
-void initKeys(char **keys);
-
 KeyboardDriver::KeyboardDriver(InterruptManager *manager)
     : InterruptHandler(0x21, manager),
       dataport(0x60),
-      commandport(0x64)
+      commandport(0x64),
+      shiftActive(false)
 {
-    // initialize keys
-    initKeys(KeyboardDriver::AnsiKeyboardKeys);
 
     while (commandport.Read() & 0x1)
     {
@@ -32,85 +28,206 @@ void printf(char *);
 
 uint32_t KeyboardDriver::HandleInterrupt(uint32_t esp)
 {
+
     uint8_t key = dataport.Read();
 
-    if (key < 0x80)
-    {
-        switch (key)
-        {
-        case 0xFA:
-        case 0xC5:
-        case 0x45:
-            break;
+    // handle key press for current keyboard
+    handleAnsiKeyPress(key);
 
-        default:
-            // char *msg = "\nKEYBOARD 0x00\t";
-            // char *hex = "0123456789ABCDEF";
-            // msg[12] = hex[(key >> 4) & 0x0F];
-            // msg[13] = hex[key & 0x0F];
-            // printf(msg);
-            printf(AnsiKeyboardKeys[key]);
-            break;
-        }
-    }
+    // char *msg = "\nKEYBOARD 0x00\t";
+    // char *hex = "0123456789ABCDEF";
+    // msg[12] = hex[(key >> 4) & 0x0F];
+    // msg[13] = hex[key & 0x0F];
+    // printf(msg);
+
+    // if (key < 0x80)
+    // {
+    //     switch (key)
+    //     {
+    //     case 0xFA:
+    //     case 0xC5:
+    //     case 0x45:
+    //         break;
+
+    //     default:
+
+    //         break;
+    //     }
+    // }
     return esp;
 }
 
-void initKeys(char **keys)
+void KeyboardDriver::handleAnsiKeyPress(uint8_t key)
 {
-    keys[0x2] = "1";
-    keys[0x3] = "2";
-    keys[0x4] = "3";
-    keys[0x5] = "4";
-    keys[0x6] = "5";
-    keys[0x7] = "6";
-    keys[0x8] = "7";
-    keys[0x9] = "8";
-    keys[0xA] = "9";
-    keys[0xB] = "0";
-    keys[0xC] = "-";
-    keys[0xD] = "=";
-    keys[0xE] = "\b"; // backspace
-    keys[0xF] = "\t"; // tab
-    keys[0x10] = "q";
-    keys[0x11] = "w";
-    keys[0x12] = "e";
-    keys[0x13] = "r";
-    keys[0x14] = "t";
-    keys[0x15] = "y";
-    keys[0x16] = "u";
-    keys[0x17] = "i";
-    keys[0x18] = "o";
-    keys[0x19] = "p";
-    keys[0x1A] = "[";
-    keys[0x1B] = "]";
-    keys[0x2B] = "\\";
-    keys[0x3A] = ""; // capslock
-    keys[0x1E] = "a";
-    keys[0x1F] = "s";
-    keys[0x20] = "d";
-    keys[0x21] = "f";
-    keys[0x22] = "g";
-    keys[0x23] = "h";
-    keys[0x24] = "j";
-    keys[0x25] = "k";
-    keys[0x26] = "l";
-    keys[0x27] = ";";
-    keys[0x28] = "'";
-    keys[0x1C] = "\n";
-    keys[0x2A] = ""; // left shift
-    keys[0x2C] = "z";
-    keys[0x2D] = "x";
-    keys[0x2E] = "c";
-    keys[0x2F] = "v";
-    keys[0x30] = "b";
-    keys[0x31] = "n";
-    keys[0x32] = "m";
-    keys[0x33] = ",";
-    keys[0x34] = ".";
-    keys[0x35] = "/";
-    keys[0x36] = ""; // right shift
-    keys[0x48] = ""; // up arrow
-    // TODO
-    keys[0x39] = " "; // spacebar
+    switch (key)
+    {
+    case 0x2:
+        shiftActive ? printf("!") : printf("1");
+        break;
+    case 0x3:
+        shiftActive ? printf("@") : printf("2");
+        break;
+    case 0x4:
+        shiftActive ? printf("#") : printf("3");
+        break;
+    case 0x5:
+        shiftActive ? printf("$") : printf("4");
+        break;
+    case 0x6:
+        shiftActive ? printf("%") : printf("5");
+        break;
+    case 0x7:
+        shiftActive ? printf("^") : printf("6");
+        break;
+    case 0x8:
+        shiftActive ? printf("&") : printf("7");
+        break;
+    case 0x9:
+        shiftActive ? printf("*") : printf("8");
+        break;
+    case 0xA:
+        shiftActive ? printf("(") : printf("9");
+        break;
+    case 0xB:
+        shiftActive ? printf(")") : printf("0");
+        break;
+    case 0xC:
+        shiftActive ? printf("_") : printf("-");
+        break;
+    case 0xD:
+        shiftActive ? printf("+") : printf("=");
+        break;
+    case 0xE: // BACKSPACE
+        shiftActive ? printf("\b\b\b\b") : printf("\b");
+        break;
+    case 0xF:                                    // TAB
+        shiftActive ? printf("") : printf("\t"); // TODO: reverse tab
+        break;
+    case 0x10:
+        shiftActive ? printf("Q") : printf("q");
+        break;
+    case 0x11:
+        shiftActive ? printf("W") : printf("w");
+        break;
+    case 0x12:
+        shiftActive ? printf("E") : printf("e");
+        break;
+    case 0x13:
+        shiftActive ? printf("R") : printf("r");
+        break;
+    case 0x14:
+        shiftActive ? printf("T") : printf("t");
+        break;
+    case 0x15:
+        shiftActive ? printf("Y") : printf("y");
+        break;
+    case 0x16:
+        shiftActive ? printf("U") : printf("u");
+        break;
+    case 0x17:
+        shiftActive ? printf("I") : printf("i");
+        break;
+    case 0x18:
+        shiftActive ? printf("O") : printf("o");
+        break;
+    case 0x19:
+        shiftActive ? printf("P") : printf("p");
+        break;
+    case 0x1A:
+        shiftActive ? printf("{") : printf("[");
+        break;
+    case 0x1B:
+        shiftActive ? printf("}") : printf("]");
+        break;
+    case 0x2B:
+        shiftActive ? printf("|") : printf("\\");
+        break;
+    case 0x3A:                                 // CAPSLOCK
+        shiftActive ? printf("") : printf(""); // TODO: implement
+        break;
+    case 0x1E:
+        shiftActive ? printf("A") : printf("a");
+        break;
+    case 0x1F:
+        shiftActive ? printf("S") : printf("s");
+        break;
+    case 0x20:
+        shiftActive ? printf("D") : printf("d");
+        break;
+    case 0x21:
+        shiftActive ? printf("F") : printf("f");
+        break;
+    case 0x22:
+        shiftActive ? printf("G") : printf("g");
+        break;
+    case 0x23:
+        shiftActive ? printf("H") : printf("h");
+        break;
+    case 0x24:
+        shiftActive ? printf("J") : printf("j");
+        break;
+    case 0x25:
+        shiftActive ? printf("K") : printf("k");
+        break;
+    case 0x26:
+        shiftActive ? printf("L") : printf("l");
+        break;
+    case 0x27:
+        shiftActive ? printf(":") : printf(";");
+        break;
+    case 0x28:
+        shiftActive ? printf("\"") : printf("\'");
+        break;
+    case 0x1C: // ENTER
+        shiftActive ? printf("") : printf("\n");
+        break;
+    case 0x2A: // LSHIFT
+    case 0x36: // RSHIFT
+        shiftActive = true;
+        break;
+    case 0x2C:
+        shiftActive ? printf("Z") : printf("z");
+        break;
+    case 0x2D:
+        shiftActive ? printf("X") : printf("x");
+        break;
+    case 0x2E:
+        shiftActive ? printf("C") : printf("c");
+        break;
+    case 0x2F:
+        shiftActive ? printf("V") : printf("v");
+        break;
+    case 0x30:
+        shiftActive ? printf("B") : printf("b");
+        break;
+    case 0x31:
+        shiftActive ? printf("N") : printf("n");
+        break;
+    case 0x32:
+        shiftActive ? printf("M") : printf("m");
+        break;
+    case 0x33:
+        shiftActive ? printf("<") : printf(",");
+        break;
+    case 0x34:
+        shiftActive ? printf(">") : printf(".");
+        break;
+    case 0x35:
+        shiftActive ? printf("?") : printf("/");
+        break;
+    case 0x48:                                 // UPARROW
+        shiftActive ? printf("") : printf(""); // TODO: implement
+        break;
+    case 0x39: // SPACEBAR
+        shiftActive ? printf(" ") : printf(" ");
+        break;
+    case 0xAA: // LSHIFT RELEASE
+    case 0xB6: // RSHIFT RELEASE
+        shiftActive = false;
+        break;
+        // TODO : implement other keys
+
+    default:
+        break;
+    }
 }

@@ -64,7 +64,7 @@ void printf(char *str)
 extern "C" void kernelMain(void *multiboot_structure, uint32_t magicnumber)
 {
     printf("\n\t\t\t\t\t\t\t** Welcome to Cloud OS **\n");
-    printf("Press any key to begin...");
+    printf("Press any key to begin...\n\n");
 
     GlobalDescriptorTable gdt;
     InterruptManager interrupts(&gdt);
