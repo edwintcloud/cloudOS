@@ -1,6 +1,3 @@
-if ($args) {
-    qemu-system-i386 -cdrom .\releases\cloudOS_$args.iso
-}
-else {
-    qemu-system-i386 -cdrom  .\releases\cloudOS_latest.iso
-}
+$VBOX = "C:\Program Files\Oracle\VirtualBox\VBoxManage.exe"
+& "$VBOX" startvm CloudOS --type emergencystop
+& "$VBOX" startvm CloudOS

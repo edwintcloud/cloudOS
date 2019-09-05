@@ -1,5 +1,5 @@
 Remove-Item -Force -Recurse .\intermediates\*
-bash -c "make kernel.bin"
+bash -c "make clean && make kernel.bin"
 Copy-Item -Force .\intermediates\kernel.bin .\releases\iso\boot\kernel.bin
 if ($args) {
     bash -c "grub-mkrescue -o releases/cloudOS_$args.iso releases/iso"

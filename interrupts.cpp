@@ -57,6 +57,7 @@ InterruptManager::InterruptManager(GlobalDescriptorTable *gdt)
 
     SetInterruptDescriptorTableEntry(0x20, CodeSegment, &HandleInterruptRequest0x00, 0, IDT_INTERRUPT_GATE);
     SetInterruptDescriptorTableEntry(0x21, CodeSegment, &HandleInterruptRequest0x01, 0, IDT_INTERRUPT_GATE);
+    SetInterruptDescriptorTableEntry(0x2C, CodeSegment, &HandleInterruptRequest0x0C, 0, IDT_INTERRUPT_GATE);
 
     picMasterCommand.Write(0x11);
     picSlaveCommand.Write(0x11);
@@ -83,6 +84,7 @@ InterruptManager::InterruptManager(GlobalDescriptorTable *gdt)
 
 InterruptManager::~InterruptManager()
 {
+    Deactivate();
 }
 
 void InterruptManager::Activate()
@@ -127,7 +129,7 @@ uint32_t InterruptManager::DoHandleInterrupt(uint8_t interruptNumber, uint32_t e
         printf(msg);
     }
 
-    if (interruptNumber >= 20 && interruptNumber < 0x28)
+    if (interruptNumber >= 20 && interruptNumber < 0x3D)
         picMasterCommand.Write(0x20);
     if (interruptNumber >= 28 && interruptNumber < 0x30)
         picSlaveCommand.Write(0x20);

@@ -1,11 +1,13 @@
 #include "types.h"
 #include "gdt.h"
 #include "interrupts.h"
+#include "driver.h"
 #include "keyboard.h"
+#include "mouse.h"
 
 void printf(char *str)
 {
-    uint16_t *VideoMemory = (uint16_t *)0xb8000;
+    static uint16_t *VideoMemory = (uint16_t *)0xb8000;
 
     static uint8_t x = 0, y = 0;
 
@@ -51,26 +53,33 @@ void printf(char *str)
     }
 }
 
-// typedef void (*constructor)();
-// extern "C" constructor start_ctors;
-// extern "C" constructor end_ctors;
-// extern "C" void callConstuctors()
-// {
-//     // jmp into each func pointer between start and end ctors
-//     for (constructor *i = &start_ctors; *i != end_ctors; i++)
-//         (*i)();
-// }
+typedef void (*constructor)();
+extern "C" constructor start_ctors;
+extern "C" constructor end_ctors;
+extern "C" void callConstructors()
+{
+    for (constructor *i = &start_ctors; i != &end_ctors; i++)
+        (*i)();
+}
 
-extern "C" void kernelMain(void *multiboot_structure, uint32_t magicnumber)
+extern "C" void kernelMain(const void *multiboot_structure, uint32_t magic_number)
 {
     printf("\n\t\t\t\t\t\t\t** Welcome to Cloud OS **\n");
-    printf("Press any key to begin...\n\n");
 
     GlobalDescriptorTable gdt;
     InterruptManager interrupts(&gdt);
 
+    printf("\n-> Initializing Hardware, Stage 1...\n");
+    DriverManager drvManager;
     KeyboardDriver keyboard(&interrupts);
+    drvManager.AddDriver(&keyboard);
+    MouseDriver mouse(&interrupts);
+    drvManager.AddDriver(&mouse);
 
+    printf("\n-> Initializing Hardware, Stage 2...\n");
+    drvManager.ActivateAll();
+
+    printf("\n-> Initializing Hardware, Stage 3...\n\n");
     interrupts.Activate();
 
     while (1)
